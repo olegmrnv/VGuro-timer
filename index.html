@@ -1,523 +1,565 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Exercise Timer</title>
-  <style>
-    :root {
-      --bg: #dfe8f3;
-      --card: #fdfefe;
-      --text: #223042;
-      --muted: #6f7f90;
-      --accent: #4a7cf3;
-      --accent-dark: #3567dc;
-      --border: #c9d7e6;
-      --warning: #d96b6b;
-      --warning-dark: #bf5656;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Exercise Timer</title>
+    <style>
+        :root {
+            --bg: #dfe8f3;
+            --card: #fdfefe;
+            --text: #223042;
+            --muted: #6f7f90;
+            --accent: #4a7cf3;
+            --accent-dark: #3567dc;
+            --border: #c9d7e6;
+            --warning: #d96b6b;
+            --warning-dark: #bf5656;
+        }
 
-    * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(180deg, #eaf1f8 0%, #dfe8f3 100%);
-      color: var(--text);
-      line-height: 1.4;
-    }
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(180deg, #eaf1f8 0%, #dfe8f3 100%);
+            color: var(--text);
+            line-height: 1.4;
+        }
 
-    .wrap {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 16px;
-    }
+        .wrap {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 16px;
+        }
 
-    .card {
-      background: linear-gradient(180deg, #ffffff 0%, #f9fbfe 100%);
-      border: 1px solid rgba(201, 215, 230, 0.95);
-      border-radius: 20px;
-      padding: 20px;
-      box-shadow:
-        0 10px 30px rgba(34, 48, 66, 0.10),
-        0 2px 8px rgba(34, 48, 66, 0.04);
-      margin-bottom: 16px;
-    }
+        .card {
+            background: linear-gradient(180deg, #ffffff 0%, #f9fbfe 100%);
+            border: 1px solid rgba(201, 215, 230, 0.95);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(34, 48, 66, 0.10), 0 2px 8px rgba(34, 48, 66, 0.04);
+            margin-bottom: 16px;
+        }
 
-    .big-timer {
-      font-size: clamp(56px, 12vw, 96px);
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-align: center;
-      margin: 12px 0;
-    }
+        .big-timer {
+            font-size: clamp(56px, 12vw, 96px);
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-align: center;
+            margin: 12px 0;
+        }
 
-    .phase {
-      text-align: center;
-      font-size: 18px;
-      color: var(--accent);
-      font-weight: 700;
-      margin-bottom: 8px;
-      min-height: 28px;
-    }
+        .phase {
+            text-align: center;
+            font-size: 18px;
+            color: var(--accent);
+            font-weight: 700;
+            margin-bottom: 8px;
+            min-height: 28px;
+        }
 
-    .exercise-name {
-      text-align: center;
-      font-size: clamp(24px, 4vw, 36px);
-      font-weight: 700;
-      min-height: 44px;
-      margin-bottom: 6px;
-    }
+        .exercise-name {
+            text-align: center;
+            font-size: clamp(24px, 4vw, 36px);
+            font-weight: 700;
+            min-height: 44px;
+            margin-bottom: 6px;
+        }
 
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-      margin-top: 18px;
-    }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 18px;
+        }
 
-    button {
-      border: 0;
-      border-radius: 14px;
-      padding: 12px 20px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      min-width: 120px;
-      transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
-      box-shadow: 0 4px 12px rgba(53, 103, 220, 0.18);
-    }
+        button {
+            border: 0;
+            border-radius: 14px;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            min-width: 120px;
+            transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 12px rgba(53, 103, 220, 0.18);
+        }
 
-    button:hover {
-      transform: translateY(-1px);
-    }
+            button:hover {
+                transform: translateY(-1px);
+            }
 
-    button:active {
-      transform: translateY(1px);
-    }
+            button:active {
+                transform: translateY(1px);
+            }
 
-    #actionBtn {
-      background: var(--accent);
-      color: white;
-    }
+        #actionBtn {
+            background: var(--accent);
+            color: white;
+        }
 
-    #actionBtn:hover {
-      background: var(--accent-dark);
-    }
+            #actionBtn:hover {
+                background: var(--accent-dark);
+            }
 
-    #resetBtn {
-      background: var(--warning);
-      color: white;
-      box-shadow: 0 4px 12px rgba(217, 107, 107, 0.22);
-    }
+        #resetBtn {
+            background: var(--warning);
+            color: white;
+            box-shadow: 0 4px 12px rgba(217, 107, 107, 0.22);
+        }
 
-    #resetBtn:hover {
-      background: var(--warning-dark);
-    }
+            #resetBtn:hover {
+                background: var(--warning-dark);
+            }
 
-    .status-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-top: 14px;
-    }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 14px;
+        }
 
-    .stat {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px;
-      background: #fafcff;
-    }
+        .stat {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            background: #fafcff;
+        }
 
-    .stat-label {
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 4px;
-    }
+        .stat-label {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
 
-    .stat-value {
-      font-size: 18px;
-      font-weight: 700;
-    }
+        .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+        }
 
-    .hint {
-      color: var(--muted);
-      font-size: 14px;
-    }
+        .hint {
+            color: var(--muted);
+            font-size: 14px;
+        }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
 
-    th, td {
-      border-bottom: 1px solid var(--border);
-      padding: 10px 8px;
-      text-align: left;
-      vertical-align: top;
-    }
+        th, td {
+            border-bottom: 1px solid var(--border);
+            padding: 10px 8px;
+            text-align: left;
+            vertical-align: top;
+        }
 
-    th {
-      background: #f7faff;
-    }
+        th {
+            background: #f7faff;
+        }
 
-    @media (max-width: 720px) {
-      th, td {
-        font-size: 13px;
-        padding: 8px 6px;
-      }
+        @media (max-width: 720px) {
+            th, td {
+                font-size: 13px;
+                padding: 8px 6px;
+            }
 
-      button {
-        flex: 1 1 40%;
-      }
+            button {
+                flex: 1 1 40%;
+            }
 
-      .status-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <div class="phase" id="phase">Ready</div>
-      <div class="exercise-name" id="exerciseName">Press Start</div>
-      <div class="big-timer" id="timer">00:15</div>
+    <div class="wrap">
+        <div class="card">
+            <div class="phase" id="phase">Ready</div>
+            <div class="exercise-name" id="exerciseName">Press Start</div>
+            <div class="big-timer" id="timer">00:15</div>
 
-      <div class="controls">
-        <button id="actionBtn">Start</button>
-        <button id="resetBtn">Reset</button>
-      </div>
+            <div class="controls">
+                <button id="actionBtn">Start</button>
+                <button id="resetBtn">Reset</button>
+            </div>
 
-      <div class="status-grid">
-        <div class="stat">
-          <div class="stat-label">Current step</div>
-          <div class="stat-value" id="stepInfo">Not started</div>
+            <div class="status-grid">
+                <div class="stat">
+                    <div class="stat-label">Current step</div>
+                    <div class="stat-value" id="stepInfo">Not started</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Routine progress</div>
+                    <div class="stat-value" id="progressInfo">0 / 2</div>
+                </div>
+            </div>
         </div>
-        <div class="stat">
-          <div class="stat-label">Routine progress</div>
-          <div class="stat-value" id="progressInfo">0 / 1</div>
+
+        <div class="card">
+            <h2>Exercise Plan</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Exercise</th>
+                        <th>Hold</th>
+                        <th>Repetitions</th>
+                        <th>Sides</th>
+                        <th>Break</th>
+                    </tr>
+                </thead>
+                <tbody id="planBody"></tbody>
+            </table>
         </div>
-      </div>
     </div>
 
-    <div class="card">
-      <h2>Exercise Plan</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Exercise</th>
-            <th>Hold</th>
-            <th>Repetitions</th>
-            <th>Sides</th>
-            <th>Break</th>
-          </tr>
-        </thead>
-        <tbody id="planBody"></tbody>
-      </table>
-    </div>
-  </div>
+    <script>
+        const START_COUNTDOWN = 15;
+        const WORK_SECONDS = 30;
+        const BREAK_SECONDS = 10;
+        const SWITCH_SECONDS = 10;
+        const CAT_COW_PREP_SECONDS = 15;
+        const CAT_COW_REP_SECONDS = 10;
 
-  <script>
-    const START_COUNTDOWN = 15;
-    const WORK_SECONDS = 30;
-    const BREAK_SECONDS = 10;
-    const SWITCH_SECONDS = 10;
+        const exercises = [
+            {
+                name: "Hip Flexor Stretch",
+                hold: 30,
+                repetitions: 2,
+                sides: 2,
+                breakSec: 10,
+                details: "Lunge position, upright torso, stretch the front of the hip."
+            },
+            {
+                name: "Cat-Cow",
+                hold: 10,
+                repetitions: 20,
+                sides: 0,
+                breakSec: 0,
+                details: "Start with Cat, then alternate Cat and Cow."
+            }
+        ];
 
-    const exercises = [
-      {
-        name: "Hip Flexor Stretch",
-        hold: 30,
-        repetitions: 2,
-        sides: 2,
-        breakSec: 10,
-        details: "Lunge position, upright torso, stretch the front of the hip."
-      }
-    ];
+        const planBody = document.getElementById("planBody");
+        const actionBtn = document.getElementById("actionBtn");
+        const resetBtn = document.getElementById("resetBtn");
 
-    const planBody = document.getElementById("planBody");
-    const actionBtn = document.getElementById("actionBtn");
-    const resetBtn = document.getElementById("resetBtn");
+        const phaseEl = document.getElementById("phase");
+        const exerciseNameEl = document.getElementById("exerciseName");
+        const timerEl = document.getElementById("timer");
+        const stepInfoEl = document.getElementById("stepInfo");
+        const progressInfoEl = document.getElementById("progressInfo");
 
-    const phaseEl = document.getElementById("phase");
-    const exerciseNameEl = document.getElementById("exerciseName");
-    const timerEl = document.getElementById("timer");
-    const stepInfoEl = document.getElementById("stepInfo");
-    const progressInfoEl = document.getElementById("progressInfo");
+        let appState = "ready";
+        let steps = [];
+        let currentStepIndex = 0;
+        let remaining = START_COUNTDOWN;
+        let intervalId = null;
 
-    let appState = "ready";
-    let steps = [];
-    let currentStepIndex = 0;
-    let remaining = START_COUNTDOWN;
-    let intervalId = null;
-
-    function formatTime(totalSec) {
-      const mins = Math.floor(totalSec / 60);
-      const secs = totalSec % 60;
-      return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
-    }
-
-    function speak(text) {
-      if (!("speechSynthesis" in window)) return;
-      try {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 1.0;
-        utterance.pitch = 1.0;
-        utterance.volume = 1.0;
-        window.speechSynthesis.speak(utterance);
-      } catch (error) {
-        console.error("Speech error:", error);
-      }
-    }
-
-    function warmupSpeech() {
-      if ("speechSynthesis" in window) {
-        const warmup = new SpeechSynthesisUtterance("");
-        window.speechSynthesis.speak(warmup);
-      }
-    }
-
-    function buildPlanTable() {
-      planBody.innerHTML = "";
-
-      exercises.forEach((ex, i) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${i + 1}</td>
-          <td>
-            <strong>${ex.name}</strong><br>
-            <span class="hint">${ex.details}</span>
-          </td>
-          <td>${ex.hold} sec</td>
-          <td>${ex.repetitions}</td>
-          <td>${ex.sides}</td>
-          <td>${ex.breakSec} sec</td>
-        `;
-        planBody.appendChild(tr);
-      });
-    }
-
-    function buildSteps() {
-      return [
-        {
-          type: "intro",
-          phase: "Get Ready",
-          exerciseName: "Hip Flexor Stretch",
-          stepInfo: "Starting soon",
-          progress: "0 / 1",
-          seconds: START_COUNTDOWN,
-          announce: "Your exercises will start in 15 seconds and your first exercise will be Hip Flexor Stretch."
-        },
-        {
-          type: "work",
-          phase: "Left Side",
-          exerciseName: "Hip Flexor Stretch",
-          stepInfo: "1. Hip Flexor Stretch - Left side - Set 1",
-          progress: "1 / 1",
-          seconds: WORK_SECONDS,
-          announce: "Begin"
-        },
-        {
-          type: "break",
-          phase: "Break",
-          exerciseName: "Hip Flexor Stretch",
-          stepInfo: "1. Hip Flexor Stretch - Left side - Break",
-          progress: "1 / 1",
-          seconds: BREAK_SECONDS,
-          announce: "Break"
-        },
-        {
-          type: "work",
-          phase: "Left Side",
-          exerciseName: "Hip Flexor Stretch",
-          stepInfo: "1. Hip Flexor Stretch - Left side - Set 2",
-          progress: "1 / 1",
-          seconds: WORK_SECONDS,
-          announce: "Repeat"
-        },
-        {
-          type: "switch",
-          phase: "Switch Sides",
-          exerciseName: "Hip Flexor Stretch",
-          stepInfo: "1. Hip Flexor Stretch - Switch sides",
-          progress: "1 / 1",
-          seconds: SWITCH_SECONDS,
-          announce: "Switch sides"
-        },
-        {
-          type: "work",
-          phase: "Right Side",
-          exerciseName: "Hip Flexor Stretch",
-          stepInfo: "1. Hip Flexor Stretch - Right side - Set 1",
-          progress: "1 / 1",
-          seconds: WORK_SECONDS,
-          announce: "Repeat"
-        },
-        {
-          type: "break",
-          phase: "Break",
-          exerciseName: "Hip Flexor Stretch",
-          stepInfo: "1. Hip Flexor Stretch - Right side - Break",
-          progress: "1 / 1",
-          seconds: BREAK_SECONDS,
-          announce: "Break"
-        },
-        {
-          type: "work",
-          phase: "Right Side",
-          exerciseName: "Hip Flexor Stretch",
-          stepInfo: "1. Hip Flexor Stretch - Right side - Set 2",
-          progress: "1 / 1",
-          seconds: WORK_SECONDS,
-          announce: "Repeat"
+        function formatTime(totalSec) {
+            const mins = Math.floor(totalSec / 60);
+            const secs = totalSec % 60;
+            return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
         }
-      ];
-    }
 
-    function updateActionButton() {
-      if (appState === "ready" || appState === "finished") {
-        actionBtn.textContent = "Start";
-      } else if (appState === "running") {
-        actionBtn.textContent = "Pause";
-      } else if (appState === "paused") {
-        actionBtn.textContent = "Resume";
-      }
-    }
+        function speak(text) {
+            if (!("speechSynthesis" in window) || !text) return;
+            try {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+                utterance.volume = 1.0;
+                window.speechSynthesis.speak(utterance);
+            } catch (error) {
+                console.error("Speech error:", error);
+            }
+        }
 
-    function setReadyState() {
-      appState = "ready";
-      clearInterval(intervalId);
-      intervalId = null;
+        function warmupSpeech() {
+            if ("speechSynthesis" in window) {
+                const warmup = new SpeechSynthesisUtterance("");
+                window.speechSynthesis.speak(warmup);
+            }
+        }
 
-      if ("speechSynthesis" in window) {
-        window.speechSynthesis.cancel();
-      }
+        function buildPlanTable() {
+            planBody.innerHTML = "";
 
-      phaseEl.textContent = "Ready";
-      exerciseNameEl.textContent = "Press Start";
-      timerEl.textContent = formatTime(START_COUNTDOWN);
-      stepInfoEl.textContent = "Not started";
-      progressInfoEl.textContent = "0 / 1";
+            exercises.forEach((ex, i) => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+              <td>${i + 1}</td>
+              <td>
+                <strong>${ex.name}</strong><br>
+                <span class="hint">${ex.details}</span>
+              </td>
+              <td>${ex.hold} sec</td>
+              <td>${ex.repetitions}</td>
+              <td>${ex.sides === 0 ? "–" : ex.sides}</td>
+              <td>${ex.breakSec} sec</td>
+            `;
+                planBody.appendChild(tr);
+            });
+        }
 
-      steps = buildSteps();
-      currentStepIndex = 0;
-      remaining = START_COUNTDOWN;
+        function buildSteps() {
+            const builtSteps = [];
 
-      updateActionButton();
-    }
+            builtSteps.push({
+                type: "intro",
+                phase: "Get Ready",
+                exerciseName: "Hip Flexor Stretch",
+                stepInfo: "Starting soon",
+                progress: "0 / 2",
+                seconds: START_COUNTDOWN,
+                announce: "Your exercises will start in 15 seconds and your first exercise will be Hip Flexor Stretch."
+            });
 
-    function setFinishedState() {
-      appState = "finished";
-      clearInterval(intervalId);
-      intervalId = null;
+            builtSteps.push({
+                type: "work",
+                phase: "Left Side",
+                exerciseName: "Hip Flexor Stretch",
+                stepInfo: "1. Hip Flexor Stretch - Left side - Set 1",
+                progress: "1 / 2",
+                seconds: WORK_SECONDS,
+                announce: "Start"
+            });
 
-      if ("speechSynthesis" in window) {
-        window.speechSynthesis.cancel();
-      }
+            builtSteps.push({
+                type: "break",
+                phase: "Break",
+                exerciseName: "Hip Flexor Stretch",
+                stepInfo: "1. Hip Flexor Stretch - Left side - Break",
+                progress: "1 / 2",
+                seconds: BREAK_SECONDS,
+                announce: "Break"
+            });
 
-      phaseEl.textContent = "Complete";
-      exerciseNameEl.textContent = "Workout complete";
-      timerEl.textContent = "00:00";
-      stepInfoEl.textContent = "Finished";
-      progressInfoEl.textContent = "1 / 1";
+            builtSteps.push({
+                type: "work",
+                phase: "Left Side",
+                exerciseName: "Hip Flexor Stretch",
+                stepInfo: "1. Hip Flexor Stretch - Left side - Set 2",
+                progress: "1 / 2",
+                seconds: WORK_SECONDS,
+                announce: "Repeat"
+            });
 
-      updateActionButton();
-    }
+            builtSteps.push({
+                type: "switch",
+                phase: "Switch Sides",
+                exerciseName: "Hip Flexor Stretch",
+                stepInfo: "1. Hip Flexor Stretch - Switch sides",
+                progress: "1 / 2",
+                seconds: SWITCH_SECONDS,
+                announce: "Switch sides"
+            });
 
-    function updateDisplay(step) {
-      phaseEl.textContent = step.phase;
-      exerciseNameEl.textContent = step.exerciseName;
-      timerEl.textContent = formatTime(remaining);
-      stepInfoEl.textContent = step.stepInfo;
-      progressInfoEl.textContent = step.progress;
-    }
+            builtSteps.push({
+                type: "work",
+                phase: "Right Side",
+                exerciseName: "Hip Flexor Stretch",
+                stepInfo: "1. Hip Flexor Stretch - Right side - Set 1",
+                progress: "1 / 2",
+                seconds: WORK_SECONDS,
+                announce: "Repeat"
+            });
 
-		function startStep(step) {
-	  remaining = step.seconds;
-	  updateDisplay(step);
+            builtSteps.push({
+                type: "break",
+                phase: "Break",
+                exerciseName: "Hip Flexor Stretch",
+                stepInfo: "1. Hip Flexor Stretch - Right side - Break",
+                progress: "1 / 2",
+                seconds: BREAK_SECONDS,
+                announce: "Break"
+            });
 
-	  if (step.announce) {
-		speak(step.announce);
-	  }
+            builtSteps.push({
+                type: "work",
+                phase: "Right Side",
+                exerciseName: "Hip Flexor Stretch",
+                stepInfo: "1. Hip Flexor Stretch - Right side - Set 2",
+                progress: "1 / 2",
+                seconds: WORK_SECONDS,
+                announce: "Repeat"
+            });
 
-	  clearInterval(intervalId);
-	  intervalId = setInterval(() => {
-		if (appState !== "running") return;
+            builtSteps.push({
+                type: "intro",
+                phase: "Get Ready",
+                exerciseName: "Cat-Cow",
+                stepInfo: "2. Cat-Cow - Prepare",
+                progress: "1 / 2",
+                seconds: CAT_COW_PREP_SECONDS,
+                announce: "Get ready, your next exercise is Cat-Cow."
+            });
 
-		remaining -= 1;
-		timerEl.textContent = formatTime(remaining);
+            for (let rep = 1; rep <= 20; rep++) {
+                const cue = rep % 2 === 1 ? "Cat" : "Cow";
 
-		if (remaining <= 3 && remaining >= 1) {
-		  speak(String(remaining));
-		}
+                builtSteps.push({
+                    type: "work",
+                    phase: "Cat-Cow",
+                    exerciseName: "Cat-Cow",
+                    stepInfo: `2. Cat-Cow - Repetition ${rep} of 20`,
+                    progress: "2 / 2",
+                    seconds: CAT_COW_REP_SECONDS,
+                    announce: cue
+                });
+            }
 
-		if (remaining <= 0) {
-		  clearInterval(intervalId);
-		  intervalId = null;
-		  moveToNextStep();
-		}
-	  }, 1000);
-	}
+            return builtSteps;
+        }
 
-    function moveToNextStep() {
-      currentStepIndex += 1;
+        function updateActionButton() {
+            if (appState === "ready" || appState === "finished") {
+                actionBtn.textContent = "Start";
+            } else if (appState === "running") {
+                actionBtn.textContent = "Pause";
+            } else if (appState === "paused") {
+                actionBtn.textContent = "Resume";
+            }
+        }
 
-      if (currentStepIndex >= steps.length) {
-        setFinishedState();
-        return;
-      }
+        function setReadyState() {
+            appState = "ready";
+            clearInterval(intervalId);
+            intervalId = null;
 
-      startStep(steps[currentStepIndex]);
-    }
+            if ("speechSynthesis" in window) {
+                window.speechSynthesis.cancel();
+            }
 
-    function startRoutine() {
-      warmupSpeech();
+            phaseEl.textContent = "Ready";
+            exerciseNameEl.textContent = "Press Start";
+            timerEl.textContent = formatTime(START_COUNTDOWN);
+            stepInfoEl.textContent = "Not started";
+            progressInfoEl.textContent = "0 / 2";
 
-      if (appState === "ready" || appState === "finished") {
-        steps = buildSteps();
-        currentStepIndex = 0;
-        appState = "running";
-        updateActionButton();
-        startStep(steps[currentStepIndex]);
-        return;
-      }
+            steps = buildSteps();
+            currentStepIndex = 0;
+            remaining = START_COUNTDOWN;
 
-      if (appState === "paused") {
-        appState = "running";
-        updateActionButton();
-        return;
-      }
-    }
+            updateActionButton();
+        }
 
-    function pauseRoutine() {
-      appState = "paused";
-      updateActionButton();
+        function setFinishedState() {
+            appState = "finished";
+            clearInterval(intervalId);
+            intervalId = null;
 
-      if ("speechSynthesis" in window) {
-        window.speechSynthesis.cancel();
-      }
+            if ("speechSynthesis" in window) {
+                window.speechSynthesis.cancel();
+            }
 
-      phaseEl.textContent = "Paused";
-    }
+            phaseEl.textContent = "Complete";
+            exerciseNameEl.textContent = "Workout complete";
+            timerEl.textContent = "00:00";
+            stepInfoEl.textContent = "Finished";
+            progressInfoEl.textContent = "2 / 2";
 
-    actionBtn.addEventListener("click", () => {
-      if (appState === "ready" || appState === "finished" || appState === "paused") {
-        startRoutine();
-      } else if (appState === "running") {
-        pauseRoutine();
-      }
-    });
+            updateActionButton();
+        }
 
-    resetBtn.addEventListener("click", () => {
-      setReadyState();
-    });
+        function updateDisplay(step) {
+            phaseEl.textContent = step.phase;
+            exerciseNameEl.textContent = step.exerciseName;
+            timerEl.textContent = formatTime(remaining);
+            stepInfoEl.textContent = step.stepInfo;
+            progressInfoEl.textContent = step.progress;
+        }
 
-    buildPlanTable();
-    setReadyState();
-  </script>
+        function startStep(step) {
+            remaining = step.seconds;
+            updateDisplay(step);
+
+            if (step.announce) {
+                speak(step.announce);
+            }
+
+            clearInterval(intervalId);
+            intervalId = setInterval(() => {
+                if (appState !== "running") return;
+
+                remaining -= 1;
+                timerEl.textContent = formatTime(remaining);
+
+                if (remaining <= 3 && remaining >= 1) {
+                    speak(String(remaining));
+                }
+
+                if (remaining <= 0) {
+                    clearInterval(intervalId);
+                    intervalId = null;
+                    moveToNextStep();
+                }
+            }, 1000);
+        }
+
+        function moveToNextStep() {
+            currentStepIndex += 1;
+
+            if (currentStepIndex >= steps.length) {
+                setFinishedState();
+                return;
+            }
+
+            startStep(steps[currentStepIndex]);
+        }
+
+        function startRoutine() {
+            warmupSpeech();
+
+            if (appState === "ready" || appState === "finished") {
+                steps = buildSteps();
+                currentStepIndex = 0;
+                appState = "running";
+                updateActionButton();
+                startStep(steps[currentStepIndex]);
+                return;
+            }
+
+            if (appState === "paused") {
+                appState = "running";
+                updateActionButton();
+            }
+        }
+
+        function pauseRoutine() {
+            appState = "paused";
+            updateActionButton();
+
+            if ("speechSynthesis" in window) {
+                window.speechSynthesis.cancel();
+            }
+
+            phaseEl.textContent = "Paused";
+        }
+
+        actionBtn.addEventListener("click", () => {
+            if (appState === "ready" || appState === "finished" || appState === "paused") {
+                startRoutine();
+            } else if (appState === "running") {
+                pauseRoutine();
+            }
+        });
+
+        resetBtn.addEventListener("click", () => {
+            setReadyState();
+        });
+
+        buildPlanTable();
+        setReadyState();
+    </script>
 </body>
 </html>
