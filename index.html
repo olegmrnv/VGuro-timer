@@ -176,6 +176,9 @@
             .status-grid {
                 grid-template-columns: 1fr;
             }
+            .hint {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -198,7 +201,7 @@
                 </div>
                 <div class="stat">
                     <div class="stat-label">Routine progress</div>
-                    <div class="stat-value" id="progressInfo">0 / 3</div>
+                    <div class="stat-value" id="progressInfo">0 / 4</div>
                 </div>
             </div>
         </div>
@@ -223,6 +226,7 @@
 
     <script>
         const START_COUNTDOWN = 15;
+
         const HIP_FLEXOR_WORK_SECONDS = 30;
         const HIP_FLEXOR_BREAK_SECONDS = 10;
         const HIP_FLEXOR_SWITCH_SECONDS = 10;
@@ -233,6 +237,10 @@
         const CHILDS_POSE_PREP_SECONDS = 15;
         const CHILDS_POSE_WORK_SECONDS = 60;
         const CHILDS_POSE_BREAK_SECONDS = 10;
+
+        const GLUTE_BRIDGE_PREP_SECONDS = 15;
+        const GLUTE_BRIDGE_REP_SECONDS = 5;
+        const GLUTE_BRIDGE_BREAK_SECONDS = 5;
 
         const exercises = [
             {
@@ -258,6 +266,14 @@
                 sides: 0,
                 breakSec: 10,
                 details: "Full relaxation, steady breathing."
+            },
+            {
+                name: "Glute Bridge on Heels",
+                hold: 5,
+                repetitions: 10,
+                sides: 0,
+                breakSec: 5,
+                details: "Press through heels and squeeze glutes at the top."
             }
         ];
 
@@ -327,26 +343,24 @@
         function buildSteps() {
             const builtSteps = [];
 
-            // Global intro
             builtSteps.push({
                 type: "intro",
                 phase: "Get Ready",
                 exerciseName: "Hip Flexor Stretch",
                 stepInfo: "Starting soon",
-                progress: "0 / 3",
+                progress: "0 / 4",
                 seconds: START_COUNTDOWN,
                 announce: "Your exercises will start in 15 seconds and your first exercise will be Hip Flexor Stretch."
             });
 
-            // Exercise 1: Hip Flexor Stretch
             builtSteps.push({
                 type: "work",
                 phase: "Left Side",
                 exerciseName: "Hip Flexor Stretch",
                 stepInfo: "1. Hip Flexor Stretch - Left side - Set 1",
-                progress: "1 / 3",
+                progress: "1 / 4",
                 seconds: HIP_FLEXOR_WORK_SECONDS,
-                announce: "Start"
+                announce: "Begin"
             });
 
             builtSteps.push({
@@ -354,7 +368,7 @@
                 phase: "Break",
                 exerciseName: "Hip Flexor Stretch",
                 stepInfo: "1. Hip Flexor Stretch - Left side - Break",
-                progress: "1 / 3",
+                progress: "1 / 4",
                 seconds: HIP_FLEXOR_BREAK_SECONDS,
                 announce: "Break"
             });
@@ -364,7 +378,7 @@
                 phase: "Left Side",
                 exerciseName: "Hip Flexor Stretch",
                 stepInfo: "1. Hip Flexor Stretch - Left side - Set 2",
-                progress: "1 / 3",
+                progress: "1 / 4",
                 seconds: HIP_FLEXOR_WORK_SECONDS,
                 announce: "Repeat"
             });
@@ -374,7 +388,7 @@
                 phase: "Switch Sides",
                 exerciseName: "Hip Flexor Stretch",
                 stepInfo: "1. Hip Flexor Stretch - Switch sides",
-                progress: "1 / 3",
+                progress: "1 / 4",
                 seconds: HIP_FLEXOR_SWITCH_SECONDS,
                 announce: "Switch sides"
             });
@@ -384,7 +398,7 @@
                 phase: "Right Side",
                 exerciseName: "Hip Flexor Stretch",
                 stepInfo: "1. Hip Flexor Stretch - Right side - Set 1",
-                progress: "1 / 3",
+                progress: "1 / 4",
                 seconds: HIP_FLEXOR_WORK_SECONDS,
                 announce: "Repeat"
             });
@@ -394,7 +408,7 @@
                 phase: "Break",
                 exerciseName: "Hip Flexor Stretch",
                 stepInfo: "1. Hip Flexor Stretch - Right side - Break",
-                progress: "1 / 3",
+                progress: "1 / 4",
                 seconds: HIP_FLEXOR_BREAK_SECONDS,
                 announce: "Break"
             });
@@ -404,23 +418,21 @@
                 phase: "Right Side",
                 exerciseName: "Hip Flexor Stretch",
                 stepInfo: "1. Hip Flexor Stretch - Right side - Set 2",
-                progress: "1 / 3",
+                progress: "1 / 4",
                 seconds: HIP_FLEXOR_WORK_SECONDS,
                 announce: "Repeat"
             });
 
-            // Prep before Cat-Cow
             builtSteps.push({
                 type: "intro",
                 phase: "Get Ready",
                 exerciseName: "Cat-Cow",
                 stepInfo: "2. Cat-Cow - Prepare",
-                progress: "1 / 3",
+                progress: "1 / 4",
                 seconds: CAT_COW_PREP_SECONDS,
                 announce: "Get ready, your next exercise is Cat-Cow."
             });
 
-            // Exercise 2: Cat-Cow
             for (let rep = 1; rep <= 20; rep++) {
                 const cue = rep % 2 === 1 ? "Cat" : "Cow";
 
@@ -429,32 +441,30 @@
                     phase: "Cat-Cow",
                     exerciseName: "Cat-Cow",
                     stepInfo: `2. Cat-Cow - Repetition ${rep} of 20`,
-                    progress: "2 / 3",
+                    progress: "2 / 4",
                     seconds: CAT_COW_REP_SECONDS,
                     announce: cue
                 });
             }
 
-            // Prep before Child's Pose
             builtSteps.push({
                 type: "intro",
                 phase: "Get Ready",
                 exerciseName: "Child's Pose",
                 stepInfo: "3. Child's Pose - Prepare",
-                progress: "2 / 3",
+                progress: "2 / 4",
                 seconds: CHILDS_POSE_PREP_SECONDS,
                 announce: "Get ready, your next exercise is Child's Pose."
             });
 
-            // Exercise 3: Child's Pose
             builtSteps.push({
                 type: "work",
                 phase: "Child's Pose",
                 exerciseName: "Child's Pose",
                 stepInfo: "3. Child's Pose - Repetition 1 of 2",
-                progress: "3 / 3",
+                progress: "3 / 4",
                 seconds: CHILDS_POSE_WORK_SECONDS,
-                announce: "Start"
+                announce: "Begin"
             });
 
             builtSteps.push({
@@ -462,7 +472,7 @@
                 phase: "Break",
                 exerciseName: "Child's Pose",
                 stepInfo: "3. Child's Pose - Break",
-                progress: "3 / 3",
+                progress: "3 / 4",
                 seconds: CHILDS_POSE_BREAK_SECONDS,
                 announce: "Break"
             });
@@ -472,17 +482,51 @@
                 phase: "Child's Pose",
                 exerciseName: "Child's Pose",
                 stepInfo: "3. Child's Pose - Repetition 2 of 2",
-                progress: "3 / 3",
+                progress: "3 / 4",
                 seconds: CHILDS_POSE_WORK_SECONDS,
                 announce: "Repeat"
             });
+
+            builtSteps.push({
+                type: "intro",
+                phase: "Get Ready",
+                exerciseName: "Glute Bridge on Heels",
+                stepInfo: "4. Glute Bridge on Heels - Prepare",
+                progress: "3 / 4",
+                seconds: GLUTE_BRIDGE_PREP_SECONDS,
+                announce: "Get ready, your next exercise is Glute Bridge on Heels."
+            });
+
+            for (let rep = 1; rep <= 10; rep++) {
+                builtSteps.push({
+                    type: "work",
+                    phase: "Glute Bridge on Heels",
+                    exerciseName: "Glute Bridge on Heels",
+                    stepInfo: `4. Glute Bridge on Heels - Repetition ${rep} of 10`,
+                    progress: "4 / 4",
+                    seconds: GLUTE_BRIDGE_REP_SECONDS,
+                    announce: rep === 1 ? "Begin" : "Repeat"
+                });
+
+                if (rep < 10) {
+                    builtSteps.push({
+                        type: "break",
+                        phase: "Break",
+                        exerciseName: "Glute Bridge on Heels",
+                        stepInfo: `4. Glute Bridge on Heels - Break after repetition ${rep}`,
+                        progress: "4 / 4",
+                        seconds: GLUTE_BRIDGE_BREAK_SECONDS,
+                        announce: "Break"
+                    });
+                }
+            }
 
             return builtSteps;
         }
 
         function updateActionButton() {
             if (appState === "ready" || appState === "finished") {
-                actionBtn.textContent = "Start";
+                actionBtn.textContent = "Begin";
             } else if (appState === "running") {
                 actionBtn.textContent = "Pause";
             } else if (appState === "paused") {
@@ -503,7 +547,7 @@
             exerciseNameEl.textContent = "Press Start";
             timerEl.textContent = formatTime(START_COUNTDOWN);
             stepInfoEl.textContent = "Not started";
-            progressInfoEl.textContent = "0 / 3";
+            progressInfoEl.textContent = "0 / 4";
 
             steps = buildSteps();
             currentStepIndex = 0;
@@ -525,7 +569,7 @@
             exerciseNameEl.textContent = "Workout complete";
             timerEl.textContent = "00:00";
             stepInfoEl.textContent = "Finished";
-            progressInfoEl.textContent = "3 / 3";
+            progressInfoEl.textContent = "4 / 4";
 
             updateActionButton();
         }
