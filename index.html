@@ -144,6 +144,7 @@
         .hint {
             color: var(--muted);
             font-size: 14px;
+            display: inline;
         }
 
         table {
@@ -176,6 +177,7 @@
             .status-grid {
                 grid-template-columns: 1fr;
             }
+
             .hint {
                 display: none;
             }
@@ -201,7 +203,7 @@
                 </div>
                 <div class="stat">
                     <div class="stat-label">Routine progress</div>
-                    <div class="stat-value" id="progressInfo">0 / 4</div>
+                    <div class="stat-value" id="progressInfo">0 / 7</div>
                 </div>
             </div>
         </div>
@@ -225,22 +227,32 @@
     </div>
 
     <script>
+        const TOTAL_EXERCISES = 7;
         const START_COUNTDOWN = 15;
+        const PREP_SECONDS = 15;
 
         const HIP_FLEXOR_WORK_SECONDS = 30;
         const HIP_FLEXOR_BREAK_SECONDS = 10;
         const HIP_FLEXOR_SWITCH_SECONDS = 10;
 
-        const CAT_COW_PREP_SECONDS = 15;
         const CAT_COW_REP_SECONDS = 10;
 
-        const CHILDS_POSE_PREP_SECONDS = 15;
         const CHILDS_POSE_WORK_SECONDS = 60;
         const CHILDS_POSE_BREAK_SECONDS = 10;
 
-        const GLUTE_BRIDGE_PREP_SECONDS = 15;
         const GLUTE_BRIDGE_REP_SECONDS = 5;
         const GLUTE_BRIDGE_BREAK_SECONDS = 5;
+
+        const DRAGON_WORK_SECONDS = 45;
+        const DRAGON_BREAK_SECONDS = 10;
+        const DRAGON_SWITCH_SECONDS = 10;
+
+        const PIGEON_WORK_SECONDS = 45;
+        const PIGEON_BREAK_SECONDS = 10;
+        const PIGEON_SWITCH_SECONDS = 10;
+
+        const CLAMSHELL_REP_SECONDS = 5;
+        const CLAMSHELL_SWITCH_SECONDS = 10;
 
         const exercises = [
             {
@@ -274,6 +286,30 @@
                 sides: 0,
                 breakSec: 5,
                 details: "Press through heels and squeeze glutes at the top."
+            },
+            {
+                name: "Dragon Stretch",
+                hold: 45,
+                repetitions: 2,
+                sides: 2,
+                breakSec: 10,
+                details: "Slight side shift to target glute medius."
+            },
+            {
+                name: "Pigeon Stretch",
+                hold: 45,
+                repetitions: 2,
+                sides: 2,
+                breakSec: 10,
+                details: "Gentle hip opener, stay relaxed."
+            },
+            {
+                name: "Clamshell",
+                hold: 5,
+                repetitions: 10,
+                sides: 2,
+                breakSec: 0,
+                details: "Side-lying, feet together, open top knee without rolling pelvis."
             }
         ];
 
@@ -340,193 +376,277 @@
             });
         }
 
+        function createStep(type, phase, exerciseName, stepInfo, progress, seconds, announce) {
+            return {
+                type,
+                phase,
+                exerciseName,
+                stepInfo,
+                progress,
+                seconds,
+                announce
+            };
+        }
+
+        function addPrepStep(builtSteps, exerciseName, exerciseNumber, previousProgress) {
+            builtSteps.push(
+                createStep(
+                    "intro",
+                    "Get Ready",
+                    exerciseName,
+                    `${exerciseNumber}. ${exerciseName} - Prepare`,
+                    previousProgress,
+                    PREP_SECONDS,
+                    `Get ready, your next exercise is ${exerciseName}.`
+                )
+            );
+        }
+
+        function addGroupedSideExercise(builtSteps, config) {
+            const {
+                number,
+                name,
+                workSeconds,
+                repetitionsPerSide,
+                breakSeconds,
+                switchSeconds
+            } = config;
+
+            const progress = `${number} / ${TOTAL_EXERCISES}`;
+
+            builtSteps.push(
+                createStep(
+                    "work",
+                    "Left Side",
+                    name,
+                    `${number}. ${name} - Left side - Repetition 1 of ${repetitionsPerSide}`,
+                    progress,
+                    workSeconds,
+                    "Begin"
+                )
+            );
+
+            for (let rep = 2; rep <= repetitionsPerSide; rep++) {
+                if (breakSeconds > 0) {
+                    builtSteps.push(
+                        createStep(
+                            "break",
+                            "Break",
+                            name,
+                            `${number}. ${name} - Left side - Break`,
+                            progress,
+                            breakSeconds,
+                            "Break"
+                        )
+                    );
+                }
+
+                builtSteps.push(
+                    createStep(
+                        "work",
+                        "Left Side",
+                        name,
+                        `${number}. ${name} - Left side - Repetition ${rep} of ${repetitionsPerSide}`,
+                        progress,
+                        workSeconds,
+                        "Repeat"
+                    )
+                );
+            }
+
+            builtSteps.push(
+                createStep(
+                    "switch",
+                    "Switch Sides",
+                    name,
+                    `${number}. ${name} - Switch sides`,
+                    progress,
+                    switchSeconds,
+                    "Switch sides"
+                )
+            );
+
+            builtSteps.push(
+                createStep(
+                    "work",
+                    "Right Side",
+                    name,
+                    `${number}. ${name} - Right side - Repetition 1 of ${repetitionsPerSide}`,
+                    progress,
+                    workSeconds,
+                    "Repeat"
+                )
+            );
+
+            for (let rep = 2; rep <= repetitionsPerSide; rep++) {
+                if (breakSeconds > 0) {
+                    builtSteps.push(
+                        createStep(
+                            "break",
+                            "Break",
+                            name,
+                            `${number}. ${name} - Right side - Break`,
+                            progress,
+                            breakSeconds,
+                            "Break"
+                        )
+                    );
+                }
+
+                builtSteps.push(
+                    createStep(
+                        "work",
+                        "Right Side",
+                        name,
+                        `${number}. ${name} - Right side - Repetition ${rep} of ${repetitionsPerSide}`,
+                        progress,
+                        workSeconds,
+                        "Repeat"
+                    )
+                );
+            }
+        }
+
+        function addSingleTrackExercise(builtSteps, config) {
+            const {
+                number,
+                name,
+                repetitions,
+                workSeconds,
+                breakSeconds
+            } = config;
+
+            const progress = `${number} / ${TOTAL_EXERCISES}`;
+
+            for (let rep = 1; rep <= repetitions; rep++) {
+                builtSteps.push(
+                    createStep(
+                        "work",
+                        name,
+                        name,
+                        `${number}. ${name} - Repetition ${rep} of ${repetitions}`,
+                        progress,
+                        workSeconds,
+                        rep === 1 ? "Begin" : "Repeat"
+                    )
+                );
+
+                if (breakSeconds > 0 && rep < repetitions) {
+                    builtSteps.push(
+                        createStep(
+                            "break",
+                            "Break",
+                            name,
+                            `${number}. ${name} - Break`,
+                            progress,
+                            breakSeconds,
+                            "Break"
+                        )
+                    );
+                }
+            }
+        }
+
         function buildSteps() {
             const builtSteps = [];
 
-            builtSteps.push({
-                type: "intro",
-                phase: "Get Ready",
-                exerciseName: "Hip Flexor Stretch",
-                stepInfo: "Starting soon",
-                progress: "0 / 4",
-                seconds: START_COUNTDOWN,
-                announce: "Your exercises will start in 15 seconds and your first exercise will be Hip Flexor Stretch."
+            builtSteps.push(
+                createStep(
+                    "intro",
+                    "Get Ready",
+                    "Hip Flexor Stretch",
+                    "Starting soon",
+                    "0 / 7",
+                    START_COUNTDOWN,
+                    "Your exercises will start in 15 seconds and your first exercise will be Hip Flexor Stretch."
+                )
+            );
+
+            addGroupedSideExercise(builtSteps, {
+                number: 1,
+                name: "Hip Flexor Stretch",
+                workSeconds: HIP_FLEXOR_WORK_SECONDS,
+                repetitionsPerSide: 2,
+                breakSeconds: HIP_FLEXOR_BREAK_SECONDS,
+                switchSeconds: HIP_FLEXOR_SWITCH_SECONDS
             });
 
-            builtSteps.push({
-                type: "work",
-                phase: "Left Side",
-                exerciseName: "Hip Flexor Stretch",
-                stepInfo: "1. Hip Flexor Stretch - Left side - Set 1",
-                progress: "1 / 4",
-                seconds: HIP_FLEXOR_WORK_SECONDS,
-                announce: "Begin"
-            });
-
-            builtSteps.push({
-                type: "break",
-                phase: "Break",
-                exerciseName: "Hip Flexor Stretch",
-                stepInfo: "1. Hip Flexor Stretch - Left side - Break",
-                progress: "1 / 4",
-                seconds: HIP_FLEXOR_BREAK_SECONDS,
-                announce: "Break"
-            });
-
-            builtSteps.push({
-                type: "work",
-                phase: "Left Side",
-                exerciseName: "Hip Flexor Stretch",
-                stepInfo: "1. Hip Flexor Stretch - Left side - Set 2",
-                progress: "1 / 4",
-                seconds: HIP_FLEXOR_WORK_SECONDS,
-                announce: "Repeat"
-            });
-
-            builtSteps.push({
-                type: "switch",
-                phase: "Switch Sides",
-                exerciseName: "Hip Flexor Stretch",
-                stepInfo: "1. Hip Flexor Stretch - Switch sides",
-                progress: "1 / 4",
-                seconds: HIP_FLEXOR_SWITCH_SECONDS,
-                announce: "Switch sides"
-            });
-
-            builtSteps.push({
-                type: "work",
-                phase: "Right Side",
-                exerciseName: "Hip Flexor Stretch",
-                stepInfo: "1. Hip Flexor Stretch - Right side - Set 1",
-                progress: "1 / 4",
-                seconds: HIP_FLEXOR_WORK_SECONDS,
-                announce: "Repeat"
-            });
-
-            builtSteps.push({
-                type: "break",
-                phase: "Break",
-                exerciseName: "Hip Flexor Stretch",
-                stepInfo: "1. Hip Flexor Stretch - Right side - Break",
-                progress: "1 / 4",
-                seconds: HIP_FLEXOR_BREAK_SECONDS,
-                announce: "Break"
-            });
-
-            builtSteps.push({
-                type: "work",
-                phase: "Right Side",
-                exerciseName: "Hip Flexor Stretch",
-                stepInfo: "1. Hip Flexor Stretch - Right side - Set 2",
-                progress: "1 / 4",
-                seconds: HIP_FLEXOR_WORK_SECONDS,
-                announce: "Repeat"
-            });
-
-            builtSteps.push({
-                type: "intro",
-                phase: "Get Ready",
-                exerciseName: "Cat-Cow",
-                stepInfo: "2. Cat-Cow - Prepare",
-                progress: "1 / 4",
-                seconds: CAT_COW_PREP_SECONDS,
-                announce: "Get ready, your next exercise is Cat-Cow."
-            });
+            addPrepStep(builtSteps, "Cat-Cow", 2, "1 / 7");
 
             for (let rep = 1; rep <= 20; rep++) {
                 const cue = rep % 2 === 1 ? "Cat" : "Cow";
-
-                builtSteps.push({
-                    type: "work",
-                    phase: "Cat-Cow",
-                    exerciseName: "Cat-Cow",
-                    stepInfo: `2. Cat-Cow - Repetition ${rep} of 20`,
-                    progress: "2 / 4",
-                    seconds: CAT_COW_REP_SECONDS,
-                    announce: cue
-                });
+                builtSteps.push(
+                    createStep(
+                        "work",
+                        "Cat-Cow",
+                        "Cat-Cow",
+                        `2. Cat-Cow - Repetition ${rep} of 20`,
+                        "2 / 7",
+                        CAT_COW_REP_SECONDS,
+                        cue
+                    )
+                );
             }
 
-            builtSteps.push({
-                type: "intro",
-                phase: "Get Ready",
-                exerciseName: "Child's Pose",
-                stepInfo: "3. Child's Pose - Prepare",
-                progress: "2 / 4",
-                seconds: CHILDS_POSE_PREP_SECONDS,
-                announce: "Get ready, your next exercise is Child's Pose."
+            addPrepStep(builtSteps, "Child's Pose", 3, "2 / 7");
+
+            addSingleTrackExercise(builtSteps, {
+                number: 3,
+                name: "Child's Pose",
+                repetitions: 2,
+                workSeconds: CHILDS_POSE_WORK_SECONDS,
+                breakSeconds: CHILDS_POSE_BREAK_SECONDS
             });
 
-            builtSteps.push({
-                type: "work",
-                phase: "Child's Pose",
-                exerciseName: "Child's Pose",
-                stepInfo: "3. Child's Pose - Repetition 1 of 2",
-                progress: "3 / 4",
-                seconds: CHILDS_POSE_WORK_SECONDS,
-                announce: "Begin"
+            addPrepStep(builtSteps, "Glute Bridge on Heels", 4, "3 / 7");
+
+            addSingleTrackExercise(builtSteps, {
+                number: 4,
+                name: "Glute Bridge on Heels",
+                repetitions: 10,
+                workSeconds: GLUTE_BRIDGE_REP_SECONDS,
+                breakSeconds: GLUTE_BRIDGE_BREAK_SECONDS
             });
 
-            builtSteps.push({
-                type: "break",
-                phase: "Break",
-                exerciseName: "Child's Pose",
-                stepInfo: "3. Child's Pose - Break",
-                progress: "3 / 4",
-                seconds: CHILDS_POSE_BREAK_SECONDS,
-                announce: "Break"
+            addPrepStep(builtSteps, "Dragon Stretch", 5, "4 / 7");
+
+            addGroupedSideExercise(builtSteps, {
+                number: 5,
+                name: "Dragon Stretch",
+                workSeconds: DRAGON_WORK_SECONDS,
+                repetitionsPerSide: 2,
+                breakSeconds: DRAGON_BREAK_SECONDS,
+                switchSeconds: DRAGON_SWITCH_SECONDS
             });
 
-            builtSteps.push({
-                type: "work",
-                phase: "Child's Pose",
-                exerciseName: "Child's Pose",
-                stepInfo: "3. Child's Pose - Repetition 2 of 2",
-                progress: "3 / 4",
-                seconds: CHILDS_POSE_WORK_SECONDS,
-                announce: "Repeat"
+            addPrepStep(builtSteps, "Pigeon Stretch", 6, "5 / 7");
+
+            addGroupedSideExercise(builtSteps, {
+                number: 6,
+                name: "Pigeon Stretch",
+                workSeconds: PIGEON_WORK_SECONDS,
+                repetitionsPerSide: 2,
+                breakSeconds: PIGEON_BREAK_SECONDS,
+                switchSeconds: PIGEON_SWITCH_SECONDS
             });
 
-            builtSteps.push({
-                type: "intro",
-                phase: "Get Ready",
-                exerciseName: "Glute Bridge on Heels",
-                stepInfo: "4. Glute Bridge on Heels - Prepare",
-                progress: "3 / 4",
-                seconds: GLUTE_BRIDGE_PREP_SECONDS,
-                announce: "Get ready, your next exercise is Glute Bridge on Heels."
+            addPrepStep(builtSteps, "Clamshell", 7, "6 / 7");
+
+            addGroupedSideExercise(builtSteps, {
+                number: 7,
+                name: "Clamshell",
+                workSeconds: CLAMSHELL_REP_SECONDS,
+                repetitionsPerSide: 10,
+                breakSeconds: 0,
+                switchSeconds: CLAMSHELL_SWITCH_SECONDS
             });
-
-            for (let rep = 1; rep <= 10; rep++) {
-                builtSteps.push({
-                    type: "work",
-                    phase: "Glute Bridge on Heels",
-                    exerciseName: "Glute Bridge on Heels",
-                    stepInfo: `4. Glute Bridge on Heels - Repetition ${rep} of 10`,
-                    progress: "4 / 4",
-                    seconds: GLUTE_BRIDGE_REP_SECONDS,
-                    announce: rep === 1 ? "Begin" : "Repeat"
-                });
-
-                if (rep < 10) {
-                    builtSteps.push({
-                        type: "break",
-                        phase: "Break",
-                        exerciseName: "Glute Bridge on Heels",
-                        stepInfo: `4. Glute Bridge on Heels - Break after repetition ${rep}`,
-                        progress: "4 / 4",
-                        seconds: GLUTE_BRIDGE_BREAK_SECONDS,
-                        announce: "Break"
-                    });
-                }
-            }
 
             return builtSteps;
         }
 
         function updateActionButton() {
             if (appState === "ready" || appState === "finished") {
-                actionBtn.textContent = "Begin";
+                actionBtn.textContent = "Start";
             } else if (appState === "running") {
                 actionBtn.textContent = "Pause";
             } else if (appState === "paused") {
@@ -547,7 +667,7 @@
             exerciseNameEl.textContent = "Press Start";
             timerEl.textContent = formatTime(START_COUNTDOWN);
             stepInfoEl.textContent = "Not started";
-            progressInfoEl.textContent = "0 / 4";
+            progressInfoEl.textContent = "0 / 7";
 
             steps = buildSteps();
             currentStepIndex = 0;
@@ -569,7 +689,7 @@
             exerciseNameEl.textContent = "Workout complete";
             timerEl.textContent = "00:00";
             stepInfoEl.textContent = "Finished";
-            progressInfoEl.textContent = "4 / 4";
+            progressInfoEl.textContent = "7 / 7";
 
             updateActionButton();
         }
