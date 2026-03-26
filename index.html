@@ -240,8 +240,8 @@
         const CHILDS_POSE_WORK_SECONDS = 60;
         const CHILDS_POSE_BREAK_SECONDS = 10;
 
-        const GLUTE_BRIDGE_REP_SECONDS = 5;
-        const GLUTE_BRIDGE_BREAK_SECONDS = 5;
+        const GLUTE_BRIDGE_REP_SECONDS = 6;
+        const GLUTE_BRIDGE_BREAK_SECONDS = 6;
 
         const DRAGON_WORK_SECONDS = 45;
         const DRAGON_BREAK_SECONDS = 10;
@@ -281,10 +281,10 @@
             },
             {
                 name: "Glute Bridge on Heels",
-                hold: 5,
+                hold: 6,
                 repetitions: 10,
                 sides: 0,
-                breakSec: 5,
+                breakSec: 6,
                 details: "Press through heels and squeeze glutes at the top."
             },
             {
@@ -362,16 +362,16 @@
             exercises.forEach((ex, i) => {
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
-              <td>${i + 1}</td>
-              <td>
-                <strong>${ex.name}</strong><br>
-                <span class="hint">${ex.details}</span>
-              </td>
-              <td>${ex.hold} sec</td>
-              <td>${ex.repetitions}</td>
-              <td>${ex.sides === 0 ? "–" : ex.sides}</td>
-              <td>${ex.breakSec} sec</td>
-            `;
+                  <td>${i + 1}</td>
+                  <td>
+                    <strong>${ex.name}</strong><br>
+                    <span class="hint">${ex.details}</span>
+                  </td>
+                  <td>${ex.hold} sec</td>
+                  <td>${ex.repetitions}</td>
+                  <td>${ex.sides === 0 ? "–" : ex.sides}</td>
+                  <td>${ex.breakSec} sec</td>
+                `;
                 planBody.appendChild(tr);
             });
         }
@@ -417,9 +417,9 @@
             builtSteps.push(
                 createStep(
                     "work",
-                    "Left Side",
+                    "One Side",
                     name,
-                    `${number}. ${name} - Left side - Repetition 1 of ${repetitionsPerSide}`,
+                    `${number}. ${name} - One side - Repetition 1 of ${repetitionsPerSide}`,
                     progress,
                     workSeconds,
                     "Begin"
@@ -433,7 +433,7 @@
                             "break",
                             "Break",
                             name,
-                            `${number}. ${name} - Left side - Break`,
+                            `${number}. ${name} - One side - Break`,
                             progress,
                             breakSeconds,
                             "Break"
@@ -444,9 +444,9 @@
                 builtSteps.push(
                     createStep(
                         "work",
-                        "Left Side",
+                        "One Side",
                         name,
-                        `${number}. ${name} - Left side - Repetition ${rep} of ${repetitionsPerSide}`,
+                        `${number}. ${name} - One side - Repetition ${rep} of ${repetitionsPerSide}`,
                         progress,
                         workSeconds,
                         "Repeat"
@@ -459,19 +459,19 @@
                     "switch",
                     "Switch Sides",
                     name,
-                    `${number}. ${name} - Switch sides`,
+                    `${number}. ${name} - Switch to another side`,
                     progress,
                     switchSeconds,
-                    "Switch sides"
+                    "Switch to another side"
                 )
             );
 
             builtSteps.push(
                 createStep(
                     "work",
-                    "Right Side",
+                    "Another Side",
                     name,
-                    `${number}. ${name} - Right side - Repetition 1 of ${repetitionsPerSide}`,
+                    `${number}. ${name} - Another side - Repetition 1 of ${repetitionsPerSide}`,
                     progress,
                     workSeconds,
                     "Repeat"
@@ -485,7 +485,7 @@
                             "break",
                             "Break",
                             name,
-                            `${number}. ${name} - Right side - Break`,
+                            `${number}. ${name} - Another side - Break`,
                             progress,
                             breakSeconds,
                             "Break"
@@ -496,9 +496,9 @@
                 builtSteps.push(
                     createStep(
                         "work",
-                        "Right Side",
+                        "Another Side",
                         name,
-                        `${number}. ${name} - Right side - Repetition ${rep} of ${repetitionsPerSide}`,
+                        `${number}. ${name} - Another side - Repetition ${rep} of ${repetitionsPerSide}`,
                         progress,
                         workSeconds,
                         "Repeat"
@@ -681,15 +681,13 @@
             clearInterval(intervalId);
             intervalId = null;
 
-            if ("speechSynthesis" in window) {
-                window.speechSynthesis.cancel();
-            }
-
             phaseEl.textContent = "Complete";
             exerciseNameEl.textContent = "Workout complete";
             timerEl.textContent = "00:00";
             stepInfoEl.textContent = "Finished";
             progressInfoEl.textContent = "7 / 7";
+
+            speak("Congratulations, you have completed this workout from Vitaliy Guro.");
 
             updateActionButton();
         }
@@ -700,6 +698,13 @@
             timerEl.textContent = formatTime(remaining);
             stepInfoEl.textContent = step.stepInfo;
             progressInfoEl.textContent = step.progress;
+        }
+
+        function shouldSpeakCountdown(step) {
+            if (step.exerciseName === "Glute Bridge on Heels") {
+                return false;
+            }
+            return true;
         }
 
         function startStep(step) {
@@ -717,7 +722,7 @@
                 remaining -= 1;
                 timerEl.textContent = formatTime(remaining);
 
-                if (remaining <= 3 && remaining >= 1) {
+                if (shouldSpeakCountdown(step) && remaining <= 3 && remaining >= 1) {
                     speak(String(remaining));
                 }
 
